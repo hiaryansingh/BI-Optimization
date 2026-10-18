@@ -46,6 +46,7 @@
   --good:#5cc489; --warn:#ffc04d; --crit:#ff7a62;
   --good-bg:#14301f; --warn-bg:#3a2d0e; --crit-bg:#3d1a14;
   --l-tab:#2dd4bf; --l-qry:#7aa2ff; --l-src:#a3b1c6; --l-rol:#f472b6;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 22px rgba(0,0,0,.25); color-scheme:dark}
 </style>
 <style>
 /* ============================================================
@@ -53,7 +54,6 @@
    What it styles: Page layout, tabs, panels, buttons, tables, cards, pills and the Report analyzer bars.
    Safe to change: Spacing, sizes and fonts. Avoid renaming classes: the scripts use them.
    ============================================================ */
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 22px rgba(0,0,0,.25); color-scheme:dark}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5}
@@ -496,6 +496,15 @@ a{color:var(--accent)}
 .lin-n{cursor:pointer;transition:opacity .2s}.lin-n:focus{outline:none}.lin-n:focus-visible rect{stroke-width:3}
 .lin-n.cur rect{stroke-width:3.2;filter:drop-shadow(0 0 6px var(--lc))}
 .lin-n.future,.lin-e.future{opacity:.3}
+/* Fade: lines not connected to the highlighted (or hovered) box fade back */
+.lin-svg.focus .lin-e{opacity:.14}
+.lin-svg.focus .lin-e.near{opacity:1}
+.lin-svg.focus .lin-e.near path{stroke-width:2.4}
+.lin-svg.focus .lin-e.near:not(.cur):not(.cyc):not(.bad):not(.filter):not(.nofilter) path{stroke:var(--purple)}
+.lin-svg.focus .lin-e .lin-el{transition:opacity .2s}
+.lin-svg.focus .lin-e:not(.near) .lin-el{opacity:0}
+.lin-svg.focus .lin-n.dim{opacity:.3}
+.lin-svg.focus .lin-n.keep,.lin-svg.focus .lin-e.near{opacity:1}
 .lin-n.cyc rect{stroke:var(--crit)} .lin-n.unc rect{stroke-dasharray:5 3}
 .lin-colh{font-size:10px;letter-spacing:.09em;text-transform:uppercase;fill:var(--muted);font-weight:600}
 .lin-e path{fill:none;stroke:var(--muted);stroke-width:1.6;transition:opacity .2s}
@@ -526,6 +535,13 @@ a{color:var(--accent)}
 #simOut .fcard p{max-width:none}
 .lin-walk{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px;font-size:13px;max-height:560px;overflow:auto}
 .lin-walk li span{color:var(--muted)}.lin-walk .linkbtn{font-size:13px;font-weight:600}
+.dx-scripts{border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));background:var(--accent-soft);border-radius:12px;padding:12px 14px}
+.dx-script+.dx-script{margin-top:12px}
+.dx-shead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.dx-script pre{max-height:340px;background:var(--surface);white-space:pre;tab-size:4}
+.dx-model input{width:auto!important;accent-color:var(--accent)}
+.lin-voice{display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center}
+.lin-voice select{font:inherit;font-size:13px;padding:6px 8px;border-radius:8px}
 
 /* Guided video */
 </style>
@@ -667,7 +683,40 @@ body.touring{padding-bottom:220px}
 
 
 <script>try{const t=localStorage.getItem("scbi-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<aside class="side" id="side" aria-label="Navigation">
+  <div class="side-brand"><span class="sb-logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span><div class="sb-txt"><b>BI Optimization Hub</b><small>Power BI · Supply chain</small></div><button class="side-close" id="sideClose" type="button" aria-label="Close menu">✕</button></div>
+  <nav class="tabs" role="tablist" aria-label="Sections" aria-orientation="vertical">
+    <div class="tgroup" role="presentation"><span aria-hidden="true"><i>★</i>Start</span><div role="presentation">
+      <button class="tab" role="tab" id="t-overview" aria-controls="overview" aria-selected="true" type="button"><span class="tn dot" aria-hidden="true"></span><span class="tl">Overview</span></button>
+      <button class="tab" role="tab" id="t-insights" aria-controls="insights" aria-selected="false" type="button"><span class="tn dot" aria-hidden="true"></span><span class="tl">Charts</span></button>
+    </div></div>
+    <div class="tgroup" role="presentation"><span aria-hidden="true"><i>1</i>Find problems</span><div role="presentation">
+      <button class="tab" role="tab" id="t-analyzer" aria-controls="analyzer" aria-selected="false" type="button"><span class="tn" aria-hidden="true">1.1</span><span class="tl">Report analyzer</span></button>
+      <button class="tab" role="tab" id="t-model" aria-controls="model" aria-selected="false" type="button"><span class="tn" aria-hidden="true">1.2</span><span class="tl">Model check</span></button>
+      <button class="tab" role="tab" id="t-rel" aria-controls="rel" aria-selected="false" type="button"><span class="tn" aria-hidden="true">1.3</span><span class="tl">Relationships</span></button>
+      <button class="tab" role="tab" id="t-lineage" aria-controls="lineage" aria-selected="false" type="button"><span class="tn" aria-hidden="true">1.4</span><span class="tl">Lineage</span></button>
+      <button class="tab" role="tab" id="t-vfit" aria-controls="vfit" aria-selected="false" type="button"><span class="tn" aria-hidden="true">1.5</span><span class="tl">Visual fit</span></button>
+      <button class="tab" role="tab" id="t-dax" aria-controls="dax" aria-selected="false" type="button"><span class="tn" aria-hidden="true">1.6</span><span class="tl">DAX checker</span></button>
+    </div></div>
+    <div class="tgroup" role="presentation"><span aria-hidden="true"><i>2</i>Fix and prove it</span><div role="presentation">
+      <button class="tab" role="tab" id="t-doctor" aria-controls="doctor" aria-selected="false" type="button"><span class="tn" aria-hidden="true">2.1</span><span class="tl">Fix an error</span></button>
+      <button class="tab" role="tab" id="t-apply" aria-controls="apply" aria-selected="false" type="button"><span class="tn" aria-hidden="true">2.2</span><span class="tl">Apply fixes</span></button>
+      <button class="tab" role="tab" id="t-tracker" aria-controls="tracker" aria-selected="false" type="button"><span class="tn" aria-hidden="true">2.3</span><span class="tl">Change tracker</span></button>
+      <button class="tab" role="tab" id="t-team" aria-controls="team" aria-selected="false" type="button"><span class="tn" aria-hidden="true">2.4</span><span class="tl">Leaderboard 🍺</span></button>
+    </div></div>
+    <div class="tgroup" role="presentation"><span aria-hidden="true"><i>✦</i>Learn</span><div role="presentation">
+      <button class="tab" role="tab" id="t-playbook" aria-controls="playbook" aria-selected="false" type="button"><span class="tn dot" aria-hidden="true"></span><span class="tl">Playbook</span></button>
+      <button class="tab" role="tab" id="t-news" aria-controls="news" aria-selected="false" type="button"><span class="tn dot" aria-hidden="true"></span><span class="tl">What's new</span></button>
+      <button class="tab" role="tab" id="t-tools" aria-controls="tools" aria-selected="false" type="button"><span class="tn dot" aria-hidden="true"></span><span class="tl">Tools</span></button>
+      <button class="tab" role="tab" id="t-howmade" aria-controls="howmade" aria-selected="false" type="button"><span class="tn dot" aria-hidden="true"></span><span class="tl">How it was made</span></button>
+      <button class="tab" role="tab" id="t-codeguide" aria-controls="codeguide" aria-selected="false" type="button"><span class="tn dot" aria-hidden="true"></span><span class="tl">How it's built</span></button>
+    </div></div>
+  </nav>
+  <div class="side-foot">Developed by <b>Aryan Singh</b></div>
+</aside>
+<div class="side-scrim" id="sideScrim" hidden></div>
 <div class="wrap">
+  <div class="mtop"><button class="btn" id="sideOpen" type="button" aria-controls="side" aria-expanded="false">☰ Menu</button><span class="mcrumb" id="mCrumb">Overview</span></div>
   <!-- Shown only if the scripts didn't load (for example, index.html opened from inside the ZIP). 90-startup.js hides it. -->
   <div id="loadWarn" role="alert" style="margin:0 0 14px;padding:14px 16px;border:2px solid #c92a2a;border-radius:12px;background:#fff5f5;color:#5c0a0a;font:15px/1.5 system-ui,sans-serif">
     <b>The tabs won't work yet: this page couldn't load its script files.</b><br>
@@ -701,28 +750,7 @@ body.touring{padding-bottom:220px}
     </div>
   </header>
 
-  <nav class="tabs" role="tablist" aria-label="Sections">
-    <div class="tgroup" role="presentation"><span aria-hidden="true">Start</span><div role="presentation">
-      <button class="tab" role="tab" id="t-overview" aria-controls="overview" aria-selected="true" type="button">Overview</button>
-      <button class="tab" role="tab" id="t-insights" aria-controls="insights" aria-selected="false" type="button">Charts</button></div></div>
-    <div class="tgroup" role="presentation"><span aria-hidden="true">1 · Find problems</span><div role="presentation">
-      <button class="tab" role="tab" id="t-analyzer" aria-controls="analyzer" aria-selected="false" type="button">Report analyzer</button>
-      <button class="tab" role="tab" id="t-model" aria-controls="model" aria-selected="false" type="button">Model check</button>
-      <button class="tab" role="tab" id="t-rel" aria-controls="rel" aria-selected="false" type="button">Relationships</button>
-      <button class="tab" role="tab" id="t-lineage" aria-controls="lineage" aria-selected="false" type="button">Lineage</button>
-      <button class="tab" role="tab" id="t-vfit" aria-controls="vfit" aria-selected="false" type="button">Visual fit</button>
-      <button class="tab" role="tab" id="t-dax" aria-controls="dax" aria-selected="false" type="button">DAX checker</button>
-      <button class="tab" role="tab" id="t-doctor" aria-controls="doctor" aria-selected="false" type="button">Fix an error</button></div></div>
-    <div class="tgroup" role="presentation"><span aria-hidden="true">2 · Fix and prove it</span><div role="presentation">
-      <button class="tab" role="tab" id="t-apply" aria-controls="apply" aria-selected="false" type="button">Apply fixes</button>
-      <button class="tab" role="tab" id="t-tracker" aria-controls="tracker" aria-selected="false" type="button">Change tracker</button>
-      <button class="tab" role="tab" id="t-team" aria-controls="team" aria-selected="false" type="button">Leaderboard 🍺</button></div></div>
-    <div class="tgroup" role="presentation"><span aria-hidden="true">Learn</span><div role="presentation">
-      <button class="tab" role="tab" id="t-playbook" aria-controls="playbook" aria-selected="false" type="button">Playbook</button>
-      <button class="tab" role="tab" id="t-news" aria-controls="news" aria-selected="false" type="button">What's new</button>
-      <button class="tab" role="tab" id="t-tools" aria-controls="tools" aria-selected="false" type="button">Tools</button>
-      <button class="tab" role="tab" id="t-codeguide" aria-controls="codeguide" aria-selected="false" type="button">How it's built</button></div></div>
-  </nav>
+  <div class="crumb" id="crumb" aria-live="polite"><span class="cg" id="crumbG">Start</span><b id="crumbT">Overview</b></div>
 
   <div class="localbar" id="localBar" hidden>
     <span class="pill md">Company mode</span>
@@ -896,6 +924,7 @@ body.touring{padding-bottom:220px}
         </div>
         <label class="field" for="dxText" style="margin-top:10px">Error text (optional, helps if the screenshot is small)
           <textarea id="dxText" spellcheck="false" placeholder="Paste the message and any Activity ID or error code"></textarea></label>
+        <label class="th dx-model" style="margin-top:8px"><input type="checkbox" id="dxUseModel" checked> Use my loaded model so the script has the real table and column names <span class="src" id="dxModelNote"></span></label>
         <div class="btnrow" style="margin-top:12px">
           <button class="btn primary" id="dxGo" type="button">Find the fix</button>
           <button class="btn" id="dxStop" type="button" hidden>Stop</button>
@@ -1159,6 +1188,93 @@ body.touring{padding-bottom:220px}
   <!-- ============ HOW IT'S BUILT (code guide) ============
        The guides come from docs/*.md (copied in by the build), the diagrams
        from 62-code-guide.js. Edit the .md files to change the text. -->
+  <!-- ============ HOW IT WAS MADE (plain English) ============ -->
+  <section class="tabpanel hm" id="howmade" role="tabpanel" aria-labelledby="t-howmade" hidden>
+    <section class="panel hm-intro">
+      <div class="eyebrow">For everyone · no coding knowledge needed</div>
+      <h2 class="hm-big">This whole hub is one file of instructions that your browser follows.</h2>
+      <p>There's no app to install and no server behind it. The file <code>index.html</code> holds everything: what's on screen, how it looks, and what happens when you click. It was written by Claude from plain-English requests, checked in a test browser, and published. This page shows how, step by step.</p>
+      <div class="hm-facts" id="hmFacts"></div>
+    </section>
+
+    <section class="panel">
+      <div class="phead"><h2>1 · Three kinds of instructions, like building a house</h2></div>
+      <div class="hm-three">
+        <div class="hm-card"><span class="hm-ico" aria-hidden="true">🧱</span><h3>HTML · the walls and rooms</h3><p>Says <b>what is on the page</b>: a heading here, a button there, a table below. Without anything else it looks plain, like a house with bare brick walls.</p></div>
+        <div class="hm-card"><span class="hm-ico" aria-hidden="true">🎨</span><h3>CSS · the paint and furniture</h3><p>Says <b>how it looks</b>: colours, fonts, spacing, rounded corners, dark mode. Change one colour value and it changes everywhere.</p></div>
+        <div class="hm-card"><span class="hm-ico" aria-hidden="true">⚡</span><h3>JavaScript · the electricity and switches</h3><p>Says <b>what happens</b>: when you click Play, load a file or press Copy. It also reads your Power BI files and runs the checks.</p></div>
+      </div>
+      <div class="hm-demo">
+        <div class="hm-demo-hd"><span><b>Try it:</b> build the same small card one layer at a time.</span>
+          <div class="chips" role="group" aria-label="Layers"><button class="chip" type="button" data-hml="1" aria-pressed="false">1 · HTML only</button><button class="chip" type="button" data-hml="2" aria-pressed="false">2 · + CSS</button><button class="chip" type="button" data-hml="3" aria-pressed="true">3 · + JavaScript</button></div></div>
+        <div class="hm-demo-body">
+          <div class="hm-stage l3" id="hmStage">
+            <div class="hm-mini"><h4>Sales report</h4><p>Slowest visual: <b id="hmSecs">4.3 s</b></p><button type="button" id="hmFix">Apply fix</button></div>
+          </div>
+          <pre class="hm-code" id="hmCode"></pre>
+        </div>
+        <p class="note" id="hmSay" style="margin:8px 0 0"></p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="phead"><h2>2 · How the code was generated</h2><span class="src">The same loop was used for every feature</span></div>
+      <ol class="hm-loop">
+        <li><span>1</span><b>You describe it</b><p>In normal words, e.g. "the lines in the flowchart should fade".</p></li>
+        <li><span>2</span><b>Claude reads the existing file</b><p>Finds the part of the page that draws the flowchart, so the new code fits in.</p></li>
+        <li><span>3</span><b>Claude writes the code</b><p>Adds a new, clearly labelled section with a plain-English note at the top.</p></li>
+        <li><span>4</span><b>Claude tests it</b><p>Opens the page in a hidden browser, clicks the buttons, checks phone size and dark mode, and looks at screenshots.</p></li>
+        <li><span>5</span><b>You review and publish</b><p>You try it, ask for changes, then upload <code>index.html</code> to GitHub.</p></li>
+      </ol>
+      <h3 class="hm-sub">Real requests from this project</h3>
+      <div class="hm-reqs" id="hmReqs"></div>
+    </section>
+
+    <section class="panel">
+      <div class="phead"><h2>3 · Reading code like a sentence</h2><span class="src">A real piece of this hub, translated line by line</span></div>
+      <p class="note" style="margin:0 0 10px">This is the code that makes the flowchart lines fade (slightly shortened). Code is just very exact English. Hover or tap a line to see what it means.</p>
+      <div class="hm-xlate" id="hmXlate"></div>
+    </section>
+
+    <section class="panel">
+      <div class="phead"><h2>4 · What happens to your Power BI files</h2><span class="src">Everything stays on your computer</span></div>
+      <svg class="hm-flow" viewBox="0 0 920 230" role="img" aria-label="Your file is read inside your browser, checked against rules, and the results are shown. Nothing goes to the internet.">
+        <defs><marker id="hmArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="hm-ah"/></marker></defs>
+        <g class="hm-n"><rect x="10" y="40" width="180" height="84" rx="14"/><text x="100" y="74" text-anchor="middle" class="t1">Your file</text><text x="100" y="98" text-anchor="middle" class="t2">.pbip folder or .json</text></g>
+        <g class="hm-n hm-b"><rect x="240" y="40" width="190" height="84" rx="14"/><text x="335" y="74" text-anchor="middle" class="t1">Browser reads it</text><text x="335" y="98" text-anchor="middle" class="t2">turns text into a list</text></g>
+        <g class="hm-n hm-o"><rect x="480" y="40" width="190" height="84" rx="14"/><text x="575" y="74" text-anchor="middle" class="t1">Rules check it</text><text x="575" y="98" text-anchor="middle" class="t2">DAX, model, visuals</text></g>
+        <g class="hm-n hm-g"><rect x="720" y="40" width="190" height="84" rx="14"/><text x="815" y="74" text-anchor="middle" class="t1">Results on screen</text><text x="815" y="98" text-anchor="middle" class="t2">scores, fixes, scripts</text></g>
+        <path d="M190 82H236" class="hm-e" marker-end="url(#hmArr)"/><path d="M430 82H476" class="hm-e" marker-end="url(#hmArr)"/><path d="M670 82H716" class="hm-e" marker-end="url(#hmArr)"/>
+        <rect x="10" y="20" width="900" height="124" rx="20" class="hm-box"/>
+        <text x="24" y="14" class="t3">YOUR COMPUTER · inside the browser tab</text>
+        <g class="hm-cloud"><rect x="330" y="176" width="260" height="44" rx="22"/><text x="460" y="203" text-anchor="middle" class="t2">Internet: nothing is uploaded</text></g>
+        <path d="M460 144V172" class="hm-e hm-x"/><path d="M450 152l20 14M470 152l-20 14" class="hm-cross"/>
+      </svg>
+      <p class="note">The only exceptions are things you choose: <b>Push to GitHub</b> sends the project to your repo, and <b>Find the fix</b> (inside Claude) sends the error to Claude on your account.</p>
+    </section>
+
+    <section class="panel">
+      <div class="phead"><h2>5 · What's inside the file</h2><span class="src" id="hmSizeNote">Measured live from this page</span></div>
+      <p class="note" style="margin:0 0 10px">The file is split into labelled sections, one per feature. Each section starts with a note in plain English saying what it does and what is safe to change. The biggest parts:</p>
+      <div class="hm-bars" id="hmBars"></div>
+    </section>
+
+    <section class="panel">
+      <div class="phead"><h2>6 · Words you'll hear</h2></div>
+      <dl class="hm-gloss">
+        <div><dt>Browser</dt><dd>Edge or Chrome. It reads the file and draws the page.</dd></div>
+        <div><dt>HTML / CSS / JavaScript</dt><dd>The three kinds of instructions above: content, look, behaviour.</dd></div>
+        <div><dt>Function</dt><dd>A named recipe, e.g. <code>showTab</code> = "show this tab and hide the others".</dd></div>
+        <div><dt>PBIP</dt><dd>Power BI saved as a folder of text files, so tools (and this hub) can read it.</dd></div>
+        <div><dt>TMDL</dt><dd>The text language a PBIP model is written in. The fix scripts are TMDL.</dd></div>
+        <div><dt>JSON</dt><dd>A tidy text format for data, used by the Performance Analyzer export.</dd></div>
+        <div><dt>GitHub</dt><dd>A website that stores the file and its history, and hosts the page (GitHub Pages).</dd></div>
+        <div><dt>Commit</dt><dd>One saved version on GitHub, with a short message about what changed.</dd></div>
+      </dl>
+      <div class="btnrow" style="margin-top:12px"><button class="btn primary" type="button" data-go2="codeguide">Want the detail? Open "How it's built" →</button></div>
+    </section>
+  </section>
+
   <section class="tabpanel" id="codeguide" role="tabpanel" aria-labelledby="t-codeguide" hidden>
     <section class="panel">
       <div class="phead"><h2>How the hub is built</h2><span class="src">The same guides as the docs/ folder, with diagrams you can click</span></div>
@@ -3216,7 +3332,7 @@ function renderTools(){
 /* =========================================================
    Events
    ========================================================= */
-const TABS=["overview","insights","analyzer","model","rel","lineage","vfit","dax","doctor","apply","tracker","team","playbook","news","tools","codeguide"];
+const TABS=["overview","insights","analyzer","model","rel","lineage","vfit","dax","doctor","apply","tracker","team","playbook","news","tools","howmade","codeguide"];
 function showTab(id){TABS.forEach(t=>{$("#"+t).hidden=t!==id;$("#t-"+t).setAttribute("aria-selected",t===id);$("#t-"+t).tabIndex=t===id?0:-1;});
   try{localStorage.setItem("scbi-tab",id);}catch(e){}
   if(id==="overview"&&typeof renderOverview==="function")try{renderOverview();}catch(e){console.error(e);}
@@ -3225,7 +3341,7 @@ function showTab(id){TABS.forEach(t=>{$("#"+t).hidden=t!==id;$("#t-"+t).setAttri
   if(id==="codeguide"&&typeof renderGuide==="function")try{renderGuide();}catch(e){console.error(e);}}
 function goTab(id){showTab(id);try{history.replaceState(null,"","#"+id);}catch(e){}window.scrollTo(0,0);}
 TABS.forEach(t=>$("#t-"+t).addEventListener("click",()=>goTab(t)));
-$(".tabs").addEventListener("keydown",e=>{if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return;const cur=TABS.findIndex(t=>!$("#"+t).hidden);const n=TABS[(cur+(e.key==="ArrowRight"?1:TABS.length-1))%TABS.length];showTab(n);$("#t-"+n).focus();});
+$(".tabs").addEventListener("keydown",e=>{if(!["ArrowRight","ArrowLeft","ArrowDown","ArrowUp"].includes(e.key))return;e.preventDefault();const cur=TABS.findIndex(t=>!$("#"+t).hidden);const n=TABS[(cur+(e.key==="ArrowRight"||e.key==="ArrowDown"?1:TABS.length-1))%TABS.length];showTab(n);$("#t-"+n).focus();});
 
 $("#vlist").addEventListener("click",e=>{const r=e.target.closest(".vrow");if(r){selId=r.dataset.id;renderList();renderInspector();}});
 $("#vlist").addEventListener("keydown",e=>{
@@ -3320,14 +3436,47 @@ Reply with only one JSON object in this shape:
  "summary":"one plain-language sentence a non-expert understands",
  "confidence":"high | medium | low",
  "causes":[{"cause":"...","likelihood":"most likely | possible | less likely","howToCheck":"one sentence"}],
- "fixes":[{"title":"...","steps":["..."],"code":"optional DAX, M or SQL snippet, else empty"}],
+ "fixes":[{"title":"...","steps":["..."],"code":"optional short snippet ONLY if it is not already in tmdlScript or mScript, else empty"}],
+ "tmdlScript":"ONE complete script for Power BI Desktop's TMDL view that applies EVERY model-level fix at once, or empty if no model change is needed",
+ "mScript":"if a fix changes Power Query, the COMPLETE corrected query (the whole let ... in) ready to replace the query in Advanced Editor, else empty",
+ "scriptNotes":"one or two sentences: what the scripts change and what to check after applying",
  "prevent":["short tip"],
  "askUser":["a question that would narrow it down"],
  "searchQuery":"max 8 words, built from the distinctive part of the error text",
  "references":[{"title":"...","url":"https://...","source":"Microsoft Learn | SQLBI | DAX Guide | Fabric Community"}]}
+Script rules: the user must be able to paste tmdlScript ONCE and select Apply, with no other copying. Start it with createOrReplace, then for each table use "ref table 'Table Name'" and write every changed or new measure, column, calculated column, partition or relationship in full TMDL (indent with tabs, keep formatString, displayFolder and other existing properties when known). Combine the code for all fixes into that one script; do not spread TMDL across fixes[].code. Use the exact names from the user's model when it is provided, otherwise use clear placeholders like 'YourTable'. If the fix is a setting, credential, gateway or service change, leave tmdlScript empty.
 Rules: at most 4 causes and 4 fixes, ordered from most likely to work. Each fix has 2-6 concrete steps. askUser only when confidence is not high, at most 2. references: at most 3, only from learn.microsoft.com, sqlbi.com, dax.guide or community.fabric.microsoft.com, and only pages you are highly confident exist at that exact URL; otherwise []. Never invent URLs. If the screenshot is not an error from Power BI, Fabric or a related tool, say so in summary, set confidence to low and leave causes and fixes empty. Do not repeat customer names, figures or other business data from the screenshot except inside errorText.`;
 }
 const ERRCOPY={not_granted:"You declined Claude for this page. Reload the page to be asked again.",sampling_disabled:"Claude isn't available on this account.",rate_limited:"Too many requests just now. Try again in a minute.",session_expired:"Sign in to Claude again, then retry.",image_rejected:"That image couldn't be read. Try a PNG or JPG screenshot under 20 MB.",refused:"Claude couldn't help with this input. Remove sensitive content and try again.",invalid_json:"The answer came back in an unexpected format. Choose Find the fix again.",images_unavailable:"Images can't be sent from this view; paste the error text instead."};
+/* The loaded PBIP model (Model check) as context, so the script uses real names. Only the tables named in the error are sent when possible. */
+function dxModelInfo(){const M=typeof MODEL!=="undefined"?MODEL:null;if(!M||!M._files)return null;
+  const tm=M._files.filter(f=>/\.tmdl$/i.test(f.path));return tm.length?{files:tm,sample:typeof M_SRC!=="undefined"&&M_SRC==="sample",label:typeof M_SRC!=="undefined"?M_SRC:""}:null;}
+function dxModelCtx(text){
+  const box=$("#dxUseModel"),I=dxModelInfo();if(!I||!box||!box.checked)return "";
+  const q=lc(text||""),tables=I.files.filter(f=>/\/tables\//i.test(f.path));
+  const nameOf=f=>decodeURIComponent(f.path.split("/").pop().replace(/\.tmdl$/i,""));
+  let pick=tables.filter(f=>{const n=lc(nameOf(f));return n.length>2&&q.includes(n);});
+  const rel=I.files.filter(f=>/relationships\.tmdl$/i.test(f.path)),exp=I.files.filter(f=>/expressions\.tmdl$/i.test(f.path));
+  let body=[...pick,...rel,...(pick.length?[]:exp)].map(f=>"// file: "+f.path.replace(/^\/+/,"")+"\n"+f.text).join("\n\n");
+  const MAX=14000;if(body.length>MAX)body=body.slice(0,MAX)+"\n// … (cut to keep the prompt short)";
+  return `\n\nThe user's model, from their PBIP project (TMDL). Tables in the model: ${tables.map(nameOf).join(", ")}.${pick.length?" Full definitions of the tables named in the error, plus relationships:":" No table was named in the error, so only relationships and shared expressions are included:"}\n\`\`\`tmdl\n${body}\n\`\`\`\nUse these exact names in tmdlScript.`;
+}
+function dxModelNote(){const n=$("#dxModelNote"),I=dxModelInfo();if(!n)return;
+  n.textContent=I?(I.sample?"(sample project is loaded)":"("+(I.label||"your project")+" is loaded)"):"(load a project on Model check first)";
+  $("#dxUseModel").disabled=!I;}
+function dxClean(code){let c=String(code||"").trim().replace(/^```[a-z]*\s*\n?/i,"").replace(/\n?```\s*$/,"").trim();return c;}
+function dxTmdl(code){let c=dxClean(code);if(!c)return "";if(!/^createOrReplace\b/i.test(c)&&/^\s*(ref\s+table|table|measure|relationship|column)\b/im.test(c))c="createOrReplace\n\n"+c.replace(/^/gm,c.startsWith("\t")?"":"\t");return c;}
+function dxScriptHTML(d){
+  const t=dxTmdl(d.tmdlScript),m=dxClean(d.mScript);
+  const snippets=(d.fixes||[]).filter(f=>dxClean(f.code)).map((f,i)=>`// Fix ${i+1}: ${f.title}\n${dxClean(f.code)}`);
+  if(!t&&!m&&!snippets.length)return "";
+  const block=(id,title,code,file,how)=>`<div class="dx-script"><div class="dx-shead"><strong>${title}</strong><span class="btnrow"><button class="btn primary" type="button" data-dxcopy="${id}">Copy all</button><button class="btn" type="button" data-dxsave="${id}" data-file="${file}">Download</button></span></div>${how?`<p class="note" style="margin:4px 0 6px">${how}</p>`:""}<pre id="${id}">${esc(code)}</pre></div>`;
+  return `<section class="dx-scripts"><h4>Recommended script · everything in one go</h4>
+    ${t?block("dxTmdlOut","TMDL script (all model fixes)",t,"fix-script.tmdl","Power BI Desktop → <b>TMDL view</b> → new tab (+) → paste → <b>Apply</b>. Make a copy of the file first."):""}
+    ${m?block("dxMOut","Power Query (complete query)",m,"fixed-query.m","Power Query Editor → select the query → <b>Advanced Editor</b> → replace everything → <b>Done</b>."):""}
+    ${!t&&!m&&snippets.length?block("dxAllOut","All code from the fixes",snippets.join("\n\n"),"fix-snippets.txt","Every snippet from the fixes below, in one place."):""}
+    ${d.scriptNotes?`<p class="note" style="margin:6px 0 0">${esc(d.scriptNotes)}</p>`:""}</section>`;
+}
 function setShot(file){
   if(!file||!/^image\//.test(file.type)) return;
   SHOT=file; const url=URL.createObjectURL(file);
@@ -3344,6 +3493,7 @@ function renderDx(d,q){
     ${(()=>{const sim=typeof kbSimilar==="function"?kbSimilar((d.errorText||"")+" "+(d.summary||"")+" "+q):[];return sim.length?`<section><h4>Your team has fixed this before</h4>${sim.map(c=>`<div class="fix" style="border-color:var(--accent)"><strong>${esc(c.summary||c.errorText)}</strong><p style="margin:4px 0 0;font-size:13px">What worked: ${esc(c.worked)}</p></div>`).join("")}</section>`:"";})()}
     ${d.errorText?`<section><h4>Error</h4><div class="errline">${esc(d.errorText)}</div></section>`:""}
     ${(d.causes||[]).length?`<section><h4>Likely causes</h4>${d.causes.map(c=>`<div class="cause"><span class="pill ${lk[c.likelihood]||"lo"}">${esc(c.likelihood||"")}</span><div><strong>${esc(c.cause)}</strong>${c.howToCheck?`<p>Check: ${esc(c.howToCheck)}</p>`:""}</div></div>`).join("")}</section>`:""}
+    ${dxScriptHTML(d)}
     ${(d.fixes||[]).length?`<section><h4>Fixes, most likely first</h4>${d.fixes.map((f,i)=>`<div class="fix"><strong>${i+1}. ${esc(f.title)}</strong><ol>${(f.steps||[]).map(s=>`<li>${esc(s)}</li>`).join("")}</ol>${f.code?`<pre>${esc(f.code)}</pre>`:""}</div>`).join("")}</section>`:""}
     ${(d.prevent||[]).length?`<section><h4>Stop it happening again</h4><ul style="margin:0;padding-left:18px;font-size:13.5px">${d.prevent.map(p=>`<li>${esc(p)}</li>`).join("")}</ul></section>`:""}
     ${(d.askUser||[]).length?`<section><h4>Would help to know</h4><ul style="margin:0;padding-left:18px;font-size:13.5px">${d.askUser.map(p=>`<li>${esc(p)}</li>`).join("")}</ul></section>`:""}
@@ -3382,7 +3532,7 @@ async function runDx(useExample){
   $("#dxOut").innerHTML=`<div class="eyebrow">Diagnosis</div><p class="empty" style="margin-top:8px">${img?"Reading the screenshot and working out the cause…":"Working out the cause…"} This usually takes 20–60 seconds.</p>`;
   try{
     const opts={signal:dxCtl.signal,modelTier:"default"}; if(img) opts.images=[img];
-    const d=await SAMPLE.json(dxPrompt(area,doing,text,!!img)+(typeof kbPromptBlock==="function"?kbPromptBlock(text+" "+doing):""),opts);
+    const d=await SAMPLE.json(dxPrompt(area,doing,text,!!img)+dxModelCtx(text+" "+doing)+(typeof kbPromptBlock==="function"?kbPromptBlock(text+" "+doing):""),opts);
     if(!d||typeof d!=="object") throw {code:"invalid_json"};
     DX={d,area,at:Date.now()}; renderDx(d,text);
     try{const h=JSON.parse(localStorage.getItem("dx-hist")||"[]");h.unshift({d,area,at:DX.at});localStorage.setItem("dx-hist",JSON.stringify(h.slice(0,8)));}catch(e){}
@@ -3413,7 +3563,8 @@ Answer in plain language with these sections:
 3. Fixes, most likely to work first, as numbered steps naming exact menus and settings; include DAX or M code where it helps
 4. How to stop it happening again
 5. A short search phrase for this exact error
-Base the answer on Microsoft Learn and fixes the Power BI community has confirmed. Say if you're unsure, and don't invent links.`+(typeof kbPromptBlock==="function"?kbPromptBlock(text+" "+doing):"");
+6. ONE complete TMDL script, in a single code block, that applies every model change at once in Power BI Desktop's TMDL view, so I paste it once and select Apply. Start with createOrReplace, use "ref table" blocks, and write each changed measure, column or relationship in full. If Power Query must change, also give the complete corrected query (whole let … in) in one code block. Skip this section if no model or query change is needed.
+Base the answer on Microsoft Learn and fixes the Power BI community has confirmed. Say if you're unsure, and don't invent links.`+dxModelCtx(text+" "+doing)+(typeof kbPromptBlock==="function"?kbPromptBlock(text+" "+doing):"");
 }
 (async()=>{
   try{SAMPLE=window.claude?await window.claude.use("sample"):null;}catch(e){SAMPLE=null;}
@@ -3437,6 +3588,10 @@ $("#kbSaveManual").onclick=async()=>{const err=$("#dxText").value.trim(),w=$("#k
   const mine=(KBDOCS[SME.id]?.cases||[]).slice(-149);mine.push({at:Date.now(),area:$("#dxArea").value,category:"",errorText:err.slice(0,600),summary:err.slice(0,160),worked:w.slice(0,800)});
   try{await SDB.doc("kb/"+SME.id).set({cases:mine});m.textContent=window.COMPANY_MODE?"Saved. Export team data to share it.":"Saved for the team.";$("#kbWorked").value="";}catch(x){m.textContent="Couldn't save just now.";}};
 $("#dxExample").onclick=()=>runDx(true);
+$("#dxOut").addEventListener("click",e=>{const c=e.target.closest("[data-dxcopy]");if(c){const pre=$("#"+c.dataset.dxcopy);copyText(pre.textContent,c,"#"+c.dataset.dxcopy);setTimeout(()=>{c.textContent="Copy all";},1600);return;}
+  const d=e.target.closest("[data-dxsave]");if(d){const pre=$("#"+d.dataset.dxsave);const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([pre.textContent],{type:"text/plain"}));a.download=d.dataset.file;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}});
+$("#t-doctor").addEventListener("click",dxModelNote);dxModelNote();
+{const ps=$("#pbipSrc");if(ps)new MutationObserver(dxModelNote).observe(ps,{childList:true,subtree:true,characterData:true});}
 $("#dxStop").onclick=()=>dxCtl?.abort();
 $("#dxClear").onclick=()=>{SHOT=null;DX=null;DXCHAT=[];$("#dxDoing").value="";$("#dxText").value="";$("#shotInner").innerHTML='<b style="color:var(--fg)">Paste a screenshot (Ctrl+V)</b><br>or drop it here, or click to choose a file';$("#dxOut").innerHTML='<div class="eyebrow">Diagnosis</div><p class="empty" style="margin:8px 0 0">Add a screenshot or paste the error text, then choose <b>Find the fix</b>.</p>';};
 $("#dxHist").addEventListener("click",e=>{const b=e.target.closest("[data-h]");if(!b)return;let h=[];try{h=JSON.parse(localStorage.getItem("dx-hist")||"[]");}catch(x){}const x=h[+b.dataset.h];if(x){DX=x;DXCHAT=[];renderDx(x.d,"");}});
@@ -5734,7 +5889,7 @@ function linFlowSVG(T){
     if(a.row!==b.row){const dn=b.y>a.y,y1=a.y+(dn?BH/2:-BH/2),y2=b.y+(dn?-BH/2:BH/2),dy=(y2-y1)/2;d=`M${a.x} ${y1}C${a.x} ${y1+dy} ${b.x} ${y2-dy} ${b.x} ${y2}`;mx=(a.x+b.x)/2;my=(y1+y2)/2;}
     else{const y=a.y+BH/2,lift=30+Math.min(60,Math.abs(b.x-a.x)*0.08);d=`M${a.x} ${y}C${a.x} ${y+lift} ${b.x} ${y+lift} ${b.x} ${y}`;mx=(a.x+b.x)/2;my=y+lift*0.75+12;}
     const si=T.steps.findIndex(st=>st.via===e),showL=e.label&&e.type!=="from"&&!/^(stored in|calculated in|loaded by|reads|value|values|axis|uses|builds on|parameter)$/.test(e.label);
-    s+=`<g class="lin-e ${e.type}${e.uncertain?" unc":""}${e.cycle?" cyc":""}${e.bad?" bad":""}" data-step="${si}"><path d="${d}"/>${showL?`<text class="lin-el" x="${mx}" y="${my}" text-anchor="middle">${esc(e.label.length>34?e.label.slice(0,32)+"…":e.label)}</text>`:""}<title>${esc(G.N.get(e.from).label+" → "+G.N.get(e.to).label+(e.label?" ("+e.label+")":"")+(e.uncertain?" · uncertain":""))}</title></g>`;});
+    s+=`<g class="lin-e ${e.type}${e.uncertain?" unc":""}${e.cycle?" cyc":""}${e.bad?" bad":""}" data-step="${si}" data-a="${esc(e.from)}" data-b="${esc(e.to)}"><path d="${d}"/>${showL?`<text class="lin-el" x="${mx}" y="${my}" text-anchor="middle">${esc(e.label.length>34?e.label.slice(0,32)+"…":e.label)}</text>`:""}<title>${esc(G.N.get(e.from).label+" → "+G.N.get(e.to).label+(e.label?" ("+e.label+")":"")+(e.uncertain?" · uncertain":""))}</title></g>`;});
   ids.forEach(id=>{const n=G.N.get(id),p=P[id],k=LKIND[n.kind],max=21,nm=n.label.length>max?n.label.slice(0,max-1)+"…":n.label,si=stepOf.get(id);
     s+=`<g class="lin-n ${k[1]}${G.cyc.has(id)?" cyc":""}${n.uncertain?" unc":""}" data-id="${esc(id)}" data-step="${si??""}" transform="translate(${p.x-BW/2} ${p.y-BH/2})" tabindex="0" role="button" aria-label="${esc(k[0]+": "+n.label)}">
       <rect width="${BW}" height="${BH}" rx="9"/><text class="nm" x="10" y="19">${esc(nm)}</text><text class="mt" x="10" y="35">${(()=>{const sp=LIN_SPD&&LIN_SPEED&&LIN_SPEED.by.get(id);return sp?`<tspan class="spd ${linHeat(sp.max,LIN_SPEED.lim)}">${esc(fmt(sp.own?sp.total:sp.dax))}</tspan>${sp.own?"":" · "+sp.n+" VIS"}`:esc(k[0].toUpperCase().slice(0,18));})()}${si!=null?" · "+(si+1):""}</text>${(()=>{const sp=LIN_SPD&&LIN_SPEED&&LIN_SPEED.by.get(id);return sp?`<rect class="lin-heat ${linHeat(sp.max,LIN_SPEED.lim)}" x="6" y="${BH-6}" width="${Math.max(4,(BW-12)*Math.min(1,sp.max/LIN_SPEED.maxAll))}" height="3" rx="1.5"/>`:"";})()}<title>${esc(n.label)}</title></g>`;});
@@ -6255,6 +6410,430 @@ body.lin-zlock{overflow:hidden}
   $g("#ghForget").addEventListener("click",()=>{$g("#ghToken").value="";$g("#ghRemember").checked=false;save(TKEY,"");st("Token forgotten on this computer.");});
   $g("#ghRemember").addEventListener("change",e=>{if(!e.target.checked)save(TKEY,"");});
   window.ghRefresh=refresh;
+})();
+</script>
+<style>
+/* ============================================================
+   13-redesign.css
+   What it styles: The page frame: numbered left sidebar, phone menu, breadcrumb, compact header,
+   and a refreshed look for panels, buttons, inputs and code boxes. Loaded after the other
+   style files, so it wins where they set the same thing.
+   Safe to change: Yes. --side-w is the sidebar width; --radius is the corner roundness.
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box}
+:root{--side-w:272px;--radius:14px}
+body{-webkit-font-smoothing:antialiased;
+  background:radial-gradient(1100px 520px at 105% -12%,color-mix(in srgb,var(--purple) 8%,transparent),transparent 62%),
+             radial-gradient(800px 420px at -5% 112%,color-mix(in srgb,var(--accent) 6%,transparent),transparent 60%),var(--bg);
+  background-attachment:fixed}
+@media (min-width:901px){body{padding-left:var(--side-w)}}
+.wrap{max-width:1240px;padding-block:20px 56px;gap:18px}
+
+/* ---------- sidebar ---------- */
+.side{position:fixed;top:0;bottom:0;left:0;width:var(--side-w);z-index:900;display:flex;flex-direction:column;
+  background:var(--surface);border-right:1px solid var(--line);box-shadow:0 0 24px rgba(40,20,80,.06)}
+.side-brand{display:flex;gap:11px;align-items:center;padding:16px 16px 14px;border-bottom:1px solid var(--line)}
+.sb-logo{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex:none;color:#fff;
+  background:linear-gradient(135deg,var(--brand-1),var(--brand-2) 55%,#f97316);box-shadow:0 4px 12px rgba(91,33,182,.25)}
+.sb-txt{min-width:0;flex:1}
+.sb-txt b{display:block;font-family:var(--f-display);font-size:15px;font-weight:800;line-height:1.15;letter-spacing:-.01em}
+.sb-txt small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+.side-close{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--fg);width:32px;height:32px;border-radius:8px;cursor:pointer}
+.side .tabs{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:16px;background:none;border:0;border-radius:0;
+  box-shadow:none;padding:14px 10px 18px;overflow-y:auto;flex:1;overscroll-behavior:contain;scrollbar-width:thin}
+.side .tgroup{display:flex;flex-direction:column;gap:3px}
+.side .tgroup>span{display:flex;align-items:center;gap:8px;padding:0 10px 3px;font-size:10.5px;letter-spacing:.1em;color:var(--muted)}
+.side .tgroup>span i{font-style:normal;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;flex:none;
+  font-size:10.5px;letter-spacing:0;font-weight:700;background:var(--purple-soft);color:var(--purple)}
+.side .tgroup>div{display:flex;flex-direction:column;flex-wrap:nowrap;gap:1px}
+.side .tab{display:flex;align-items:center;gap:10px;width:100%;text-align:left;white-space:normal;border-radius:9px;padding:8px 10px;
+  font-weight:500;font-size:13.5px;color:var(--fg);position:relative}
+.side .tab .tn{font-family:var(--f-mono);font-size:11px;color:var(--muted);min-width:24px;font-variant-numeric:tabular-nums}
+.side .tab:hover{background:var(--sunk);color:var(--purple)}
+.side .tab:hover .tn{color:var(--purple)}
+.side .tab[aria-selected="true"]{color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 32%,transparent)}
+.side .tab[aria-selected="true"] .tn{color:inherit;opacity:.8}
+.side .tab .tn.dot{display:inline-flex;justify-content:flex-start;padding-left:8px}
+.side .tab .tn.dot::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.55}
+:root[data-theme="dark"] .side .tab[aria-selected="true"]{color:#1a0d02}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .side .tab[aria-selected="true"]{color:#1a0d02}}
+.side-foot{padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.side-foot b{color:var(--fg);font-weight:600}
+
+/* ---------- breadcrumb + phone bar ---------- */
+.crumb{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 -4px}
+.crumb .cg{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--purple);
+  background:var(--purple-soft);border-radius:999px;padding:3px 10px}
+.crumb b{font-family:var(--f-display);font-size:clamp(20px,2.6vw,26px);font-weight:800;letter-spacing:-.015em}
+.mtop{display:none}
+@media (min-width:901px){.side-close,.side-scrim{display:none!important}}
+@media (max-width:900px){
+  .side{width:min(86vw,300px);transform:translateX(-105%);transition:transform .22s ease;box-shadow:0 0 40px rgba(0,0,0,.25)}
+  .side.open{transform:none}
+  .side-scrim{position:fixed;inset:0;z-index:899;background:rgba(12,6,24,.45)}
+  .mtop{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:60;margin:-20px calc(-1 * max(16px,env(safe-area-inset-left,0px))) 0;
+    padding:10px max(16px,env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--bg) 86%,transparent);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .mcrumb{font-weight:600;font-size:14px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+@media (prefers-reduced-motion:reduce){.side{transition:none}}
+
+/* ---------- compact header ---------- */
+.hero{padding:20px 24px;gap:14px 20px;border-radius:18px}
+.hero h1{font-size:clamp(22px,3vw,30px)}
+.hero p{font-size:13.5px;margin-top:4px}
+.hero .logo{width:58px;height:58px;border-radius:14px}
+.byline{margin-top:10px}
+@media (max-width:640px){.hero p{display:none}.hero .herotools{position:static;order:3;flex-direction:row;flex-wrap:wrap;align-items:center;align-self:stretch}.hero .eyebrow{font-size:10px}}
+
+/* ---------- surfaces ---------- */
+.panel{border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);border-color:color-mix(in srgb,var(--line) 80%,transparent)}
+.stat{border-radius:12px;box-shadow:var(--shadow)}
+.controls{border-radius:var(--radius);box-shadow:var(--shadow)}
+.panel h2{font-size:16.5px;letter-spacing:-.005em}
+.btn{border-radius:9px;padding:8px 14px;transition:border-color .15s,background .15s,box-shadow .15s,filter .15s}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));border-color:transparent;color:#fff;
+  box-shadow:0 3px 10px color-mix(in srgb,var(--accent) 26%,transparent)}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn:disabled{opacity:.55;cursor:default}
+:root[data-theme="dark"] .btn.primary{color:#1a0d02}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.primary{color:#1a0d02}}
+textarea,select,input[type=text],input[type=search]{border-radius:8px}
+pre{border-radius:10px;border:1px solid var(--line)}
+.chip{border-radius:999px}
+</style>
+<script>
+/* ============================================================
+   54-sidebar.js  ·  Numbered sidebar: breadcrumb and phone menu
+
+   What this file does (plain English):
+     Keeps the title above each page in step with the sidebar ("1 · Find problems › Model check"),
+     and on narrow screens opens and closes the sidebar as a slide-in menu.
+     The tabs themselves still work through showTab() in 32-analyzer-events.js.
+
+   Safe to change: Yes.
+   ============================================================ */
+(function(){
+  const side=document.getElementById("side"),scrim=document.getElementById("sideScrim"),openB=document.getElementById("sideOpen");
+  if(!side)return;
+  function crumb(){
+    const t=side.querySelector('.tab[aria-selected="true"]');if(!t)return;
+    const g=t.closest(".tgroup").querySelector(":scope>span"),num=g.querySelector("i").textContent.trim(),name=g.textContent.replace(num,"").trim();
+    const label=t.querySelector(".tl").textContent;
+    document.getElementById("crumbG").textContent=/\d/.test(num)?num+" · "+name:name;
+    document.getElementById("crumbT").textContent=label;
+    document.getElementById("mCrumb").textContent=label;
+    const box=side.querySelector(".tabs"),r=t.getBoundingClientRect(),br=box.getBoundingClientRect();
+    if(r.top<br.top||r.bottom>br.bottom)t.scrollIntoView({block:"nearest"});
+  }
+  function setOpen(on){side.classList.toggle("open",on);scrim.hidden=!on;openB.setAttribute("aria-expanded",on);
+    if(on)(side.querySelector('.tab[aria-selected="true"]')||side.querySelector(".tab")).focus({preventScroll:true});}
+  new MutationObserver(crumb).observe(side,{subtree:true,attributes:true,attributeFilter:["aria-selected"]});
+  openB.addEventListener("click",()=>setOpen(true));
+  document.getElementById("sideClose").addEventListener("click",()=>{setOpen(false);openB.focus();});
+  scrim.addEventListener("click",()=>setOpen(false));
+  side.addEventListener("click",e=>{if(e.target.closest(".tab")&&matchMedia("(max-width:900px)").matches)setOpen(false);});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&side.classList.contains("open")){setOpen(false);openB.focus();}});
+  crumb();
+})();
+</script>
+<script>
+/* ============================================================
+   55-flow-fade.js  ·  Fade the flowchart lines that aren't connected to the current box
+
+   What this file does (plain English):
+     On the Lineage flowchart, the lines going into and out of the highlighted step stay
+     bold; every other line fades back. Hovering (or focusing) a box does the same for that
+     box, and moving away goes back to the current step. Turn it off with the "Fade other
+     lines" tick box above the chart.
+
+   Safe to change: the opacity values in 07-lineage.css (".lin-svg.focus").
+   ============================================================ */
+(function(){
+  const canvas=document.getElementById("linFlow");if(!canvas)return;
+  let ON=true;try{ON=localStorage.getItem("scbi-fade")!=="0";}catch(e){}
+  const bar=document.querySelector("#linViewFlow .lin-bar");
+  if(bar){const l=document.createElement("label");l.className="th lin-spdtog";l.innerHTML='<input type="checkbox" id="linFade"'+(ON?" checked":"")+'> Fade other lines';bar.appendChild(l);
+    l.querySelector("input").addEventListener("change",e=>{ON=e.target.checked;try{localStorage.setItem("scbi-fade",ON?"1":"0");}catch(x){}apply();});}
+  let hover=null,obs=null;
+  function apply(){try{apply0();}finally{if(obs)obs.takeRecords();}}
+  function apply0(){
+    const svg=canvas.querySelector("svg.lin-svg");if(!svg)return;
+    const cur=svg.querySelector(".lin-n.cur"),id=hover||(cur&&cur.dataset.id);
+    svg.querySelectorAll(".lin-e.near").forEach(g=>g.classList.remove("near"));
+    svg.querySelectorAll(".lin-n.dim,.lin-n.keep").forEach(g=>g.classList.remove("dim","keep"));
+    if(!ON||!id){svg.classList.remove("focus");return;}
+    svg.classList.add("focus");const keep=new Set([id]);
+    svg.querySelectorAll(".lin-e").forEach(g=>{if(g.dataset.a===id||g.dataset.b===id){g.classList.add("near");keep.add(g.dataset.a);keep.add(g.dataset.b);}});
+    if(hover)svg.querySelectorAll(".lin-n").forEach(n=>n.classList.add(keep.has(n.dataset.id)?"keep":"dim"));
+  }
+  obs=new MutationObserver(()=>{if(!hover)apply();});obs.observe(canvas,{subtree:true,childList:true,attributes:true,attributeFilter:["class"]});
+  const enter=e=>{const n=e.target.closest&&e.target.closest(".lin-n");if(!n||hover===n.dataset.id)return;hover=n.dataset.id;apply();};
+  const leave=e=>{const n=e.target.closest&&e.target.closest(".lin-n");if(!n)return;const to=e.relatedTarget&&e.relatedTarget.closest&&e.relatedTarget.closest(".lin-n");if(to===n)return;hover=null;apply();};
+  canvas.addEventListener("pointerover",enter);canvas.addEventListener("pointerout",leave);
+  canvas.addEventListener("focusin",enter);canvas.addEventListener("focusout",leave);
+  apply();
+})();
+</script>
+<script>
+/* ============================================================
+   56-flow-voice.js  ·  Read the Lineage flowchart aloud
+
+   What this file does (plain English):
+     Adds a "Voice" button and a speed choice next to Play on the Lineage flowchart.
+     With Voice on, every step is read out as it's highlighted ("Step 3 of 15. Measure:
+     Total Sales. …"), and Play waits for the sentence to finish before moving on, so it
+     never cuts the voice off. Prev, Next and clicking a box read that step.
+     It uses the voice built into the browser (Edge or Chrome on Windows), so it works
+     offline and nothing is sent anywhere.
+
+   Safe to change: RATES (the speed choices) and the wording in narr().
+   ============================================================ */
+(function(){
+  if(typeof linGo!=="function")return;
+  const bar=document.querySelector("#linViewFlow .lin-bar");if(!bar)return;
+  const HAS="speechSynthesis" in window,RATES=[["0.85","Slow"],["1","Normal"],["1.2","Fast"]];
+  let VOICE=false,RATE=1,VPLAY=false,fallback=null,gen=0;
+  try{VOICE=localStorage.getItem("scbi-voice")==="1";RATE=+(localStorage.getItem("scbi-voice-rate")||1)||1;}catch(e){}
+  const wrap=document.createElement("span");wrap.className="lin-voice";
+  wrap.innerHTML=`<button class="btn" type="button" id="linVoice" aria-pressed="false">🔇 Voice off</button>
+    <select id="linRate" aria-label="Voice speed">${RATES.map(r=>`<option value="${r[0]}">${r[1]}</option>`).join("")}</select>
+    <span class="src" id="linVoiceMsg" aria-live="polite"></span>`;
+  bar.insertBefore(wrap,document.getElementById("linStepN"));
+  const btn=wrap.querySelector("#linVoice"),rate=wrap.querySelector("#linRate"),msg=wrap.querySelector("#linVoiceMsg");
+  rate.value=String(RATES.find(r=>+r[0]===RATE)?RATE:1);
+  function paint(){btn.setAttribute("aria-pressed",VOICE);btn.textContent=VOICE?"🔊 Voice on":"🔇 Voice off";btn.classList.toggle("primary",VOICE);rate.hidden=!VOICE;}
+  paint();
+
+  const clean=t=>String(t).replace(/\b[A-Z][A-Z0-9.]{2,}\s*\(.*?(\.\s|$)/g,"a formula. ").replace(/[-+*\/]\s*a formula/g,"and a formula").replace(/…/g,"").replace(/'([^']+)'\[/g,"$1, ").replace(/\[([^\]]+)\]/g," $1 ").replace(/[·›→]/g,", ").replace(/#,##0(\.0+)?/g,"number format").replace(/\s+([,.])/g,"$1").replace(/\s{2,}/g," ").trim();
+  function narr(i){
+    const T=LIN_T,s=T&&T.steps[i];if(!s)return "";const n=LIN.N.get(s.id);if(!n)return "";
+    const k=(LKIND[n.kind]||[n.kind])[0];let io=null;try{io=n.kind!=="source"?linIO(n):null;}catch(e){}
+    let txt="";try{txt=linStepText(s,i,T);}catch(e){}
+    return clean(`Step ${i+1} of ${T.steps.length}. ${k}: ${n.label}. ${txt}${io?` Data in: ${io[0]}. Data out: ${io[1]}.`:""}`);
+  }
+  function pickVoice(){const v=speechSynthesis.getVoices();return v.find(x=>/en-IN/i.test(x.lang))||v.find(x=>/en-GB/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null;}
+  function hush(){gen++;clearTimeout(fallback);fallback=null;if(HAS)try{speechSynthesis.cancel();}catch(e){}}
+  function say(text,done){
+    hush();const my=gen;if(!HAS||!text){if(done)setTimeout(()=>{if(my===gen)done();},1700);return;}
+    const u=new SpeechSynthesisUtterance(text);u.rate=RATE;const v=pickVoice();if(v)u.voice=v;
+    let fin=false;const end=()=>{if(fin||my!==gen)return;fin=true;clearTimeout(fallback);msg.textContent="";if(done)setTimeout(()=>{if(my===gen)done();},450);};
+    u.onend=end;u.onerror=e=>{if(e.error==="not-allowed"||e.error==="synthesis-unavailable")msg.textContent="The browser blocked the voice. Click Voice again, or open the page directly in Edge or Chrome.";end();};
+    /* if the browser never reports the end (it happens with long sentences), move on anyway */
+    fallback=setTimeout(end,(text.split(/\s+/).length*0.55/RATE+4)*1000);
+    msg.textContent="Speaking…";
+    setTimeout(()=>{if(my!==gen)return;try{speechSynthesis.resume();speechSynthesis.speak(u);}catch(e){end();}},120);
+  }
+  function next(){if(!VPLAY)return;if(LIN_STEP>=LIN_T.steps.length-1){stopPlay();return;}baseGo(LIN_STEP+1);speakNow(true);}
+  function speakNow(chain){say(narr(LIN_STEP),chain?next:null);}
+  function stopPlay(){VPLAY=false;LIN_TIMER=null;const b=document.getElementById("linPlay");if(b)b.textContent="▶ Play";}
+
+  /* wrap the existing step functions so every step change is read out */
+  const baseGo=linGo,baseStop=linStop;
+  linGo=function(i){baseGo(i);if(VOICE&&!VPLAY)speakNow(false);};
+  linStop=function(){if(VPLAY)stopPlay();hush();msg.textContent="";baseStop();};
+  const play=document.getElementById("linPlay"),basePlay=play.onclick;
+  play.onclick=e=>{
+    if(!VOICE){return basePlay.call(play,e);}
+    if(VPLAY||LIN_TIMER){linStop();return;}
+    if(LIN_STEP>=LIN_T.steps.length-1)baseGo(0);
+    VPLAY=true;LIN_TIMER=-1;play.textContent="❚❚ Pause";speakNow(true);
+  };
+  btn.addEventListener("click",()=>{
+    if(!HAS){msg.textContent="This browser has no built-in voice. Use Edge or Chrome.";return;}
+    VOICE=!VOICE;try{localStorage.setItem("scbi-voice",VOICE?"1":"0");}catch(e){}paint();
+    if(VOICE){if(!speechSynthesis.getVoices().length)msg.textContent="Loading voices… if you hear nothing, check the volume.";linStop();speakNow(false);}
+    else{linStop();}
+  });
+  rate.addEventListener("change",()=>{RATE=+rate.value||1;try{localStorage.setItem("scbi-voice-rate",String(RATE));}catch(e){}if(VOICE&&!VPLAY)speakNow(false);});
+  /* stop talking when you leave the Lineage tab or switch to Dependencies */
+  const tab=document.getElementById("lineage"),flow=document.getElementById("linViewFlow");
+  new MutationObserver(()=>{if(tab.hidden||flow.hidden)linStop();}).observe(tab,{attributes:true,attributeFilter:["hidden"]});
+  new MutationObserver(()=>{if(flow.hidden)linStop();}).observe(flow,{attributes:true,attributeFilter:["hidden"]});
+  if(HAS&&speechSynthesis.getVoices&&!speechSynthesis.getVoices().length)try{speechSynthesis.addEventListener("voiceschanged",()=>{},{once:true});}catch(e){}
+})();
+</script>
+<style>
+/* ============================================================
+   14-how-it-was-made.css
+   What it styles: The "How it was made" tab (plain-English explainer).
+   Safe to change: Yes.
+   ============================================================ */
+.hm .hm-big{font-family:var(--f-display);font-size:clamp(20px,2.6vw,27px);font-weight:800;letter-spacing:-.015em;margin:6px 0 8px;max-width:30ch}
+.hm-intro p{color:var(--muted);max-width:75ch;margin:0}
+.hm-intro{background:linear-gradient(135deg,var(--purple-soft),var(--surface) 55%,var(--accent-soft))}
+.hm-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px}
+.hm-fact{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.hm-fact b{display:block;font-family:var(--f-display);font-size:24px;font-weight:800;line-height:1.1}
+.hm-fact span{font-size:12px;color:var(--muted)}
+.hm-three{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px}
+.hm-card{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--sunk)}
+.hm-card h3{font-size:14.5px;margin:6px 0 4px}
+.hm-card p{margin:0;font-size:13px;color:var(--muted)}
+.hm-ico{font-size:24px}
+.hm-demo{margin-top:16px;border:1px dashed color-mix(in srgb,var(--accent) 50%,var(--line));border-radius:14px;padding:14px}
+.hm-demo-hd{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:13.5px}
+.hm-demo-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:14px;align-items:stretch}
+@media (max-width:760px){.hm-demo-body{grid-template-columns:1fr}}
+.hm-stage{display:grid;place-items:center;min-height:190px;border-radius:12px;background:var(--sunk);padding:16px}
+.hm-code{margin:0;max-height:none;font-size:11.5px;white-space:pre-wrap}
+/* layer 1: what the browser shows with HTML alone */
+.hm-stage.l1{background:#fff;color:#000}
+.hm-stage.l1 .hm-mini,.hm-stage.l1 .hm-mini *{all:revert}
+/* layer 2 and 3: styled */
+.hm-stage:not(.l1) .hm-mini{width:min(100%,260px);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);font-family:var(--f-body)}
+.hm-stage:not(.l1) .hm-mini h4{margin:0 0 4px;font-family:var(--f-display);font-size:17px}
+.hm-stage:not(.l1) .hm-mini p{margin:0 0 12px;color:var(--muted);font-size:13px}
+.hm-stage:not(.l1) .hm-mini b{color:var(--crit)}
+.hm-stage:not(.l1) .hm-mini b.ok{color:var(--good)}
+.hm-stage:not(.l1) .hm-mini button{font:inherit;font-weight:600;border:0;border-radius:9px;padding:8px 14px;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent-2));cursor:pointer}
+.hm-stage.l2 .hm-mini button{cursor:not-allowed;opacity:.9}
+.hm-loop{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:10px;counter-reset:none}
+.hm-loop li{position:relative;border:1px solid var(--line);border-radius:12px;padding:12px 12px 12px 14px;background:var(--surface)}
+.hm-loop li span{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;font-weight:700;font-size:12px;margin-right:6px}
+.hm-loop li b{font-size:14px}
+.hm-loop li p{margin:6px 0 0;font-size:12.5px;color:var(--muted)}
+.hm-sub{font-size:14px;margin:18px 0 8px}
+.hm-reqs{display:flex;flex-direction:column;gap:8px}
+.hm-req{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1.4fr);gap:10px 14px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.hm-req q{font-style:italic;color:var(--fg);quotes:"“" "”"}
+.hm-req .arr{color:var(--accent);font-weight:700}
+.hm-req div{font-size:13px;color:var(--muted)}
+.hm-req div b{color:var(--fg)}
+.hm-req .btnrow{margin-top:4px}
+@media (max-width:700px){.hm-req{grid-template-columns:1fr}.hm-req .arr{display:none}}
+.hm-xlate{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.hm-row{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);border-top:1px solid var(--line)}
+.hm-row:first-child{border-top:0}
+.hm-row code{display:block;background:var(--sunk);padding:8px 12px;font-size:11.5px;white-space:pre-wrap;word-break:break-word;border-radius:0}
+.hm-row span{padding:8px 12px;font-size:13px;color:var(--muted)}
+.hm-row:hover,.hm-row:focus-within,.hm-row.on{background:var(--accent-soft)}
+.hm-row:hover span,.hm-row.on span{color:var(--fg)}
+@media (max-width:700px){.hm-row{grid-template-columns:1fr}}
+.hm-flow{width:100%;height:auto;display:block;max-width:920px;margin:0 auto}
+.hm-flow .hm-n rect{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.hm-flow .hm-b rect{stroke:var(--purple)} .hm-flow .hm-o rect{stroke:var(--accent)} .hm-flow .hm-g rect{stroke:var(--good)}
+.hm-flow .t1{fill:var(--fg);font:600 16px var(--f-body)}
+.hm-flow .t2{fill:var(--muted);font:13px var(--f-body)}
+.hm-flow .t3{fill:var(--purple);font:700 11px var(--f-body);letter-spacing:.08em}
+.hm-flow .hm-e{stroke:var(--muted);stroke-width:2;fill:none}
+.hm-flow .hm-ah{fill:var(--muted)}
+.hm-flow .hm-box{fill:none;stroke:var(--purple);stroke-width:1.5;stroke-dasharray:6 5;opacity:.6}
+.hm-flow .hm-cloud rect{fill:var(--sunk);stroke:var(--line);stroke-dasharray:4 4}
+.hm-flow .hm-x{stroke-dasharray:4 4}
+.hm-flow .hm-cross{stroke:var(--crit);stroke-width:3;stroke-linecap:round}
+.hm-bars{display:flex;flex-direction:column;gap:7px}
+.hm-bar{display:grid;grid-template-columns:minmax(120px,240px) minmax(0,1fr) 56px;gap:10px;align-items:center;font-size:13px}
+.hm-bar .lbl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hm-bar .trk{height:12px;border-radius:6px;background:var(--sunk);overflow:hidden}
+.hm-bar .trk i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--purple),var(--accent))}
+.hm-bar .pc{text-align:right;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+@media (max-width:560px){.hm-bar{grid-template-columns:1fr 48px}.hm-bar .trk{grid-column:1/-1;order:3}}
+.hm-gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:10px;margin:0}
+.hm-gloss div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.hm-gloss dt{font-weight:700;font-size:13.5px}
+.hm-gloss dd{margin:3px 0 0;font-size:13px;color:var(--muted)}
+</style>
+<script>
+/* ============================================================
+   57-how-it-was-made.js  ·  The "How it was made" tab
+
+   What this file does (plain English):
+     Fills the plain-English explainer: the three-layer demo (HTML, CSS, JavaScript),
+     the list of real requests and what was built, the line-by-line translation of a
+     real piece of code, and the "what's inside" bars, which are measured from this
+     page itself every time, so they stay true when the hub changes.
+
+   Safe to change: REQS (the request list) and XLATE (the translated code).
+   ============================================================ */
+(function(){
+  const $h=s=>document.querySelector(s);if(!$h("#howmade"))return;
+  const E=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+  /* ---- 1. three-layer demo ---- */
+  const CODE={
+    1:`<!-- HTML: what is on the card -->
+<div class="card">
+  <h4>Sales report</h4>
+  <p>Slowest visual: <b>4.3 s</b></p>
+  <button>Apply fix</button>
+</div>`,
+    2:`/* CSS: how the card looks */
+.card   { border-radius: 14px; padding: 16px;
+          box-shadow: soft shadow; }
+h4      { font-size: 17px; }
+b       { color: red; }
+button  { background: orange gradient;
+          color: white; border-radius: 9px; }`,
+    3:`// JavaScript: what happens on click
+button.onclick = () => {
+  seconds.textContent = "1.2 s";    // show the new time
+  seconds.classList.add("ok");      // turn it green
+  button.textContent = "Fixed ✓";   // change the button
+};`};
+  const SAY={1:"HTML alone: the browser shows the content with its plain default look. Nothing happens when you click.",
+    2:"Add CSS: same content, now it looks designed. The button still does nothing.",
+    3:"Add JavaScript: click Apply fix and the card reacts. That's all three layers working together."};
+  function layer(n){
+    const st=$h("#hmStage");st.className="hm-stage l"+n;
+    document.querySelectorAll("[data-hml]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.hml==n));
+    $h("#hmCode").textContent=CODE[n];$h("#hmSay").textContent=SAY[n];reset();
+  }
+  function reset(){const s=$h("#hmSecs");s.textContent="4.3 s";s.classList.remove("ok");$h("#hmFix").textContent="Apply fix";}
+  document.querySelectorAll("[data-hml]").forEach(b=>b.addEventListener("click",()=>layer(+b.dataset.hml)));
+  $h("#hmFix").addEventListener("click",()=>{if(!$h("#hmStage").classList.contains("l3"))return;const s=$h("#hmSecs");
+    if(s.classList.contains("ok")){reset();return;}s.textContent="1.2 s";s.classList.add("ok");$h("#hmFix").textContent="Fixed ✓ (click to undo)";});
+  layer(3);
+
+  /* ---- 2. real requests ---- */
+  const REQS=[
+    ["Can we increase fit in the flowchart?","Zoom bar on the Lineage charts: Fit, Width, zoom in and out, full screen, Ctrl + scroll and drag.","52-flow-zoom.js","lineage"],
+    ["Upload a PBIP file and push it to GitHub from the page","A Push to GitHub panel on Model check that sends the project as one commit.","53-github-push.js","model"],
+    ["Make it more beautiful; organise the numbering","Numbered left sidebar, page titles, refreshed colours and spacing, phone menu.","13-redesign.css, 54-sidebar.js","overview"],
+    ["Fix an error should give the TMDL script in one go","One combined TMDL script (and full Power Query) with Copy all and Download.","40-error-doctor.js","doctor"],
+    ["The lines in the flowchart should fade","Lines not connected to the current or hovered box fade back.","55-flow-fade.js","lineage"],
+    ["Can we add audio in the flowchart?","Voice button that reads each step aloud, with speed control.","56-flow-voice.js","lineage"],
+    ["Show simply how this code was made","This page.","57-how-it-was-made.js","howmade"]];
+  $h("#hmReqs").innerHTML=REQS.map(r=>`<div class="hm-req"><q>${E(r[0])}</q><span class="arr" aria-hidden="true">→</span><div><b>${E(r[1])}</b><br>New section: <code>${E(r[2])}</code>${r[3]!=="howmade"?`<div class="btnrow"><button class="linkbtn" type="button" data-hmgo="${r[3]}">See it →</button></div>`:""}</div></div>`).join("");
+
+  /* ---- 3. code translated line by line ---- */
+  const XLATE=[
+    ["function apply(){","Here is a recipe called “apply”. Run it whenever the chart changes."],
+    ["  const svg = canvas.querySelector(\"svg\");","Find the flowchart drawing on the page."],
+    ["  const cur = svg.querySelector(\".lin-n.cur\");","Find the box that is highlighted right now."],
+    ["  const id = hover || cur.dataset.id;","Use the box under the mouse if there is one, otherwise the highlighted box."],
+    ["  if (!ON || !id) { svg.classList.remove(\"focus\"); return; }","If fading is switched off, or no box is chosen, show every line normally and stop."],
+    ["  svg.classList.add(\"focus\");","Tell the drawing to fade its lines (the CSS decides how faint)."],
+    ["  svg.querySelectorAll(\".lin-e\").forEach(line => {","Now go through every line, one at a time…"],
+    ["    if (line.dataset.a === id || line.dataset.b === id)","…and if the line starts or ends at the chosen box…"],
+    ["      line.classList.add(\"near\");","…mark it “near”, so it stays bold instead of fading."],
+    ["  });","Done with the lines."],
+    ["}","End of the recipe."]];
+  $h("#hmXlate").innerHTML=XLATE.map(x=>`<div class="hm-row" tabindex="0"><code>${E(x[0])}</code><span>${E(x[1])}</span></div>`).join("");
+  $h("#hmXlate").addEventListener("click",e=>{const r=e.target.closest(".hm-row");if(!r)return;document.querySelectorAll(".hm-row.on").forEach(x=>x!==r&&x.classList.remove("on"));r.classList.toggle("on");});
+
+  /* ---- 5. what's inside: measured from the page itself ---- */
+  function measure(){
+    const parts=new Map();let css=0,js=0,html=0,total=0;
+    const name=t=>{const m=t.match(/={5,}\s*\n\s*(\d\d-[\w.-]+\.(?:js|css))(?:\s*·\s*([^\n]+))?/);return m?(m[2]||m[1]).trim():null;};
+    document.querySelectorAll("style").forEach(s=>{const t=s.textContent;css+=t.length;});
+    document.querySelectorAll("script:not([src])").forEach(s=>{const t=s.textContent;js+=t.length;const n=name(t);if(n)parts.set(n,(parts.get(n)||0)+t.length);});
+    let lines=0;document.querySelectorAll("style,script:not([src])").forEach(x=>{lines+=x.textContent.split("\n").length;});total=css+js;
+    $h("#hmFacts").innerHTML=[[Math.round(total/1024)+" KB","of code, all in one file"],[lines.toLocaleString(),"lines of code"],
+      [document.querySelectorAll('script:not([src])').length+document.querySelectorAll('style').length,"labelled sections"],
+      [document.querySelectorAll(".side .tab").length,"pages (tabs)"]].map(f=>`<div class="hm-fact"><b>${E(f[0])}</b><span>${E(f[1])}</span></div>`).join("");
+    const rows=[["CSS · looks (all style sections)",css],...[...parts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10).map(([k,v])=>["JS · "+k,v])];
+    const max=Math.max(...rows.map(r=>r[1]));
+    $h("#hmBars").innerHTML=rows.map(r=>`<div class="hm-bar"><span class="lbl" title="${E(r[0])}">${E(r[0])}</span><span class="trk"><i style="width:${(r[1]/max*100).toFixed(1)}%"></i></span><span class="pc">${(r[1]/total*100).toFixed(1)}%</span></div>`).join("");
+    $h("#hmSizeNote").textContent="Measured live from this page · share of all the code";
+  }
+  /* navigation buttons */
+  $h("#howmade").addEventListener("click",e=>{const b=e.target.closest("[data-hmgo],[data-go2]");if(!b)return;const t=b.dataset.hmgo||b.dataset.go2;if(typeof goTab==="function")goTab(t);});
+  let done=false;const tab=$h("#howmade");
+  new MutationObserver(()=>{if(!tab.hidden&&!done){done=true;try{measure();}catch(e){console.error(e);}}}).observe(tab,{attributes:true,attributeFilter:["hidden"]});
+  if(!tab.hidden){done=true;measure();}
 })();
 </script>
 <script>
