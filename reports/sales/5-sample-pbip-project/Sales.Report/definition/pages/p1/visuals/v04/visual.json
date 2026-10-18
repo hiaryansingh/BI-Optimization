@@ -1,0 +1,1 @@
+{"name":"v04","position":{"x":0,"y":0,"width":280,"height":200},"visual":{"visualType":"card","query":{"queryState":{"Values":{"projections":[{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"Sales YoY %"}},"queryRef":"Sales.Sales YoY %"}]}}},"visualContainerObjects":{"title":[{"properties":{"text":{"expr":{"Literal":{"Value":"'Sales growth'"}}}}}]}}}

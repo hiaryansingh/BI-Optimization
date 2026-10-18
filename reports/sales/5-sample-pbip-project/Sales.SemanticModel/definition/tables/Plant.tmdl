@@ -1,0 +1,20 @@
+table Plant
+
+	column PlantCode
+		dataType: string
+		summarizeBy: none
+		sourceColumn: PlantCode
+
+	column 'Plant Name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: PlantName
+
+	column Region
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Region
+
+	partition Plant = m
+		mode: import
+		source = Sql.Database("sql01", "SupplyDW"){[Schema="dbo",Item="DimPlant"]}[Data]

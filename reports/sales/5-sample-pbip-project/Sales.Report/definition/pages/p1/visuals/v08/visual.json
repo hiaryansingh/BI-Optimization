@@ -1,0 +1,1 @@
+{"name":"v08","position":{"x":0,"y":0,"width":280,"height":200},"visual":{"visualType":"slicer","query":{"queryState":{"Values":{"projections":[{"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Customer"}},"Property":"Segment"}},"queryRef":"Customer.Segment"}]}}},"visualContainerObjects":{"title":[{"properties":{"text":{"expr":{"Literal":{"Value":"'Segment'"}}}}}]}}}

@@ -1,0 +1,11 @@
+table LocalDateTable_7d1e
+	isHidden
+
+	column Date
+		dataType: dateTime
+		isHidden
+		summarizeBy: none
+
+	partition LocalDateTable_7d1e = calculated
+		mode: import
+		source = Calendar(Date(Year(MIN('Customer'[BirthDate])), 1, 1), Date(Year(MAX('Customer'[BirthDate])), 12, 31))

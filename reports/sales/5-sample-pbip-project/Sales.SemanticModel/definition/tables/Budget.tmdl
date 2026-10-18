@@ -1,0 +1,23 @@
+table Budget
+
+	measure 'Budget Amount' = SUM(Budget[BudgetAmount])
+		formatString: #,##0
+
+	column Month
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: Month
+
+	column Category
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Category
+
+	column BudgetAmount
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: BudgetAmount
+
+	partition Budget = m
+		mode: import
+		source = Sql.Database("sql01", "FinanceDW"){[Schema="plan",Item="MonthlyBudget"]}[Data]

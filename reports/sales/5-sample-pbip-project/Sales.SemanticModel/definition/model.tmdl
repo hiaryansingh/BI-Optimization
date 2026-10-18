@@ -1,0 +1,11 @@
+model Model
+	culture: en-US
+
+ref table Sales
+ref table Customer
+ref table Product
+ref table Date
+ref table Supplier
+ref table Plant
+ref table Inventory
+ref table Budget
