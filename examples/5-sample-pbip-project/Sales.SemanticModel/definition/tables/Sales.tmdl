@@ -1,0 +1,88 @@
+table Sales
+	lineageTag: 1f2e
+
+	measure 'Total Sales' = SUM(Sales[Amount])
+		formatString: #,##0
+
+	measure 'Sales YoY %' =
+			DIVIDE(
+				[Total Sales] - CALCULATE([Total Sales], SAMEPERIODLASTYEAR('Date'[Date])),
+				CALCULATE([Total Sales], SAMEPERIODLASTYEAR('Date'[Date]))
+			)
+		formatString: 0.0%
+
+	measure 'Order Count' = COUNT(Sales[OrderID])
+		formatString: #,##0
+
+	measure Profit = SUM(Sales[Amount]) - SUM(Sales[Cost])
+		formatString: #,##0
+
+	measure 'Red Sales' = CALCULATE([Total Sales], FILTER(Product, Product[Color] = "Red"))
+		formatString: #,##0
+
+	measure 'Old Margin' = IFERROR([Profit] / [Total Sales], 0)
+
+	column OrderID
+		dataType: string
+		summarizeBy: none
+		sourceColumn: OrderID
+
+	column OrderDateTime
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: OrderDateTime
+
+	column ShipDate
+		dataType: dateTime
+		summarizeBy: none
+		sourceColumn: ShipDate
+
+	column CustomerKey
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: CustomerKey
+
+	column ProductKey
+		dataType: string
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+	column Amount
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Amount
+
+	column Cost
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Cost
+
+	column TransactionGUID
+		dataType: string
+		summarizeBy: none
+		sourceColumn: TransactionGUID
+
+	column Comments
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Comments
+
+	column SourceSystem
+		dataType: string
+		summarizeBy: none
+		sourceColumn: SourceSystem
+
+	column 'Profit Band' = IF(Sales[Amount] - Sales[Cost] > 100, "High", "Low")
+		dataType: string
+		summarizeBy: none
+
+	partition Sales = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database(ServerName, "SalesDW"),
+				    Sales = Source{[Schema="dbo",Item="FactSales"]}[Data],
+				    #"Renamed columns" = Table.RenameColumns(Sales, {{"NetValue", "Amount"}, {"CostValue", "Cost"}}),
+				    #"Added source system" = Table.AddColumn(#"Renamed columns", "SourceSystem", each "SAP", type text)
+				in
+				    #"Added source system"

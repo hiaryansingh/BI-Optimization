@@ -1,0 +1,20 @@
+relationship 3c1a
+	fromColumn: Sales.CustomerKey
+	toColumn: Customer.CustomerKey
+
+relationship 9b2e
+	crossFilteringBehavior: bothDirections
+	fromColumn: Sales.ProductKey
+	toColumn: Product.ProductKey
+
+relationship 4f7d
+	fromColumn: Sales.OrderDateTime
+	toColumn: Date.Date
+
+relationship 6a0b
+	fromColumn: Customer.BirthDate
+	toColumn: LocalDateTable_7d1e.Date
+
+relationship 2d8c
+	fromColumn: Product.SupplierKey
+	toColumn: Supplier.SupplierKey

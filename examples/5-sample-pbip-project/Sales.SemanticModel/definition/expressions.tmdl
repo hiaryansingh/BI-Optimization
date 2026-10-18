@@ -1,0 +1,10 @@
+expression ServerName = "sql01" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 6c1d
+
+expression DimDateQuery =
+		let
+		    Source = Sql.Database(ServerName, "SalesDW"),
+		    DimDate = Source{[Schema="dbo",Item="DimDate"]}[Data]
+		in
+		    DimDate
+	lineageTag: 9e42

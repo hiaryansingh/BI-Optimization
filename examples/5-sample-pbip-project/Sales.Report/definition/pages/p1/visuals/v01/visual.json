@@ -1,0 +1,1 @@
+{"name":"v01","position":{"x":0,"y":0,"width":280,"height":200},"visual":{"visualType":"card","query":{"queryState":{"Values":{"projections":[{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"Total Sales"}},"queryRef":"Sales.Total Sales"}]}}},"visualContainerObjects":{"title":[{"properties":{"text":{"expr":{"Literal":{"Value":"'Total Sales'"}}}}}]}}}

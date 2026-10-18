@@ -1,0 +1,4 @@
+role 'Region Managers'
+	modelPermission: read
+
+	tablePermission Customer = [Segment] <> "Internal"

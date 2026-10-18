@@ -1,0 +1,787 @@
+{
+ "version": "1.1.0",
+ "events": [
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.000Z",
+   "end": "2026-10-15T09:30:04.235Z",
+   "id": "v1",
+   "metrics": {
+    "visualTitle": "Sales Detail Table",
+    "visualId": "v1",
+    "visualType": "tableEx",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.620Z",
+   "end": "2026-10-15T09:30:03.295Z",
+   "id": "q1",
+   "parentId": "v1"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.630Z",
+   "end": "2026-10-15T09:30:03.280Z",
+   "id": "d1",
+   "parentId": "q1",
+   "metrics": {
+    "QueryText": "DEFINE VAR __DS0Core = SUMMARIZECOLUMNS('Sales'[OrderID],'Sales'[OrderDate],'Customer'[Name],'Customer'[City],'Product'[Name],'Product'[Category],'Product'[SubCategory],'Store'[Region],'Store'[Name],'Sales'[Channel],'Sales'[Status],\"Revenue\",[Revenue],\"Units\",[Units],\"Margin\",[Margin %])\nEVALUATE TOPN(501, __DS0Core, 'Sales'[OrderID], 1)",
+    "RowCount": 48000
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:03.295Z",
+   "end": "2026-10-15T09:30:04.235Z",
+   "id": "r1",
+   "parentId": "v1"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.040Z",
+   "end": "2026-10-15T09:30:04.335Z",
+   "id": "v2",
+   "metrics": {
+    "visualTitle": "Customer Matrix",
+    "visualId": "v2",
+    "visualType": "pivotTable",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.580Z",
+   "end": "2026-10-15T09:30:03.725Z",
+   "id": "q2",
+   "parentId": "v2"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.590Z",
+   "end": "2026-10-15T09:30:03.710Z",
+   "id": "d2",
+   "parentId": "q2",
+   "metrics": {
+    "QueryText": "DEFINE MEASURE 'Sales'[High Value Rev] = SUMX(FILTER('Sales', 'Sales'[Amount] > 1000), 'Sales'[Amount] * 'Sales'[FX Rate])\nVAR __DS0Core = SUMMARIZECOLUMNS('Customer'[Segment],'Customer'[Name],'Date'[Year],'Date'[Month],\"High_Value_Rev\",[High Value Rev])\nEVALUATE __DS0Core",
+    "RowCount": 12500
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:03.725Z",
+   "end": "2026-10-15T09:30:04.335Z",
+   "id": "r2",
+   "parentId": "v2"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.080Z",
+   "end": "2026-10-15T09:30:02.335Z",
+   "id": "v3",
+   "metrics": {
+    "visualTitle": "Revenue by Region",
+    "visualId": "v3",
+    "visualType": "clusteredBarChart",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.260Z",
+   "end": "2026-10-15T09:30:02.125Z",
+   "id": "q3",
+   "parentId": "v3"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.270Z",
+   "end": "2026-10-15T09:30:02.110Z",
+   "id": "d3",
+   "parentId": "q3",
+   "metrics": {
+    "QueryText": "DEFINE MEASURE 'Sales'[Rev All Regions] = CALCULATE([Revenue], FILTER(ALL('Sales'), 'Sales'[Year] = MAX('Sales'[Year])))\nVAR __DS0Core = SUMMARIZECOLUMNS('Store'[Region],\"Rev\",[Rev All Regions])\nEVALUATE __DS0Core",
+    "RowCount": 12
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:02.125Z",
+   "end": "2026-10-15T09:30:02.335Z",
+   "id": "r3",
+   "parentId": "v3"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.120Z",
+   "end": "2026-10-15T09:30:02.135Z",
+   "id": "v4",
+   "metrics": {
+    "visualTitle": "Store Locations",
+    "visualId": "v4",
+    "visualType": "map",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.450Z",
+   "end": "2026-10-15T09:30:00.885Z",
+   "id": "q4",
+   "parentId": "v4"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.460Z",
+   "end": "2026-10-15T09:30:00.870Z",
+   "id": "d4",
+   "parentId": "q4",
+   "metrics": {
+    "QueryText": "EVALUATE SUMMARIZECOLUMNS('Store'[Latitude],'Store'[Longitude],'Store'[Name],\"Revenue\",[Revenue])",
+    "RowCount": 2400
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.885Z",
+   "end": "2026-10-15T09:30:02.135Z",
+   "id": "r4",
+   "parentId": "v4"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.160Z",
+   "end": "2026-10-15T09:30:01.725Z",
+   "id": "v5",
+   "metrics": {
+    "visualTitle": "Supplier Lead Time",
+    "visualId": "v5",
+    "visualType": "scatterChart",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.420Z",
+   "end": "2026-10-15T09:30:01.205Z",
+   "id": "q5",
+   "parentId": "v5"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.430Z",
+   "end": "2026-10-15T09:30:01.190Z",
+   "id": "d5",
+   "parentId": "q5",
+   "metrics": {
+    "QueryText": "EVALUATE SUMMARIZECOLUMNS('Supplier'[Name],'PO'[PO Number],\"Lead Days\",[Avg Lead Days],\"Spend\",[Spend])",
+    "RowCount": 9000
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:01.205Z",
+   "end": "2026-10-15T09:30:01.725Z",
+   "id": "r5",
+   "parentId": "v5"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.200Z",
+   "end": "2026-10-15T09:30:01.465Z",
+   "id": "v6",
+   "metrics": {
+    "visualTitle": "YoY Revenue Trend",
+    "visualId": "v6",
+    "visualType": "lineChart",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.340Z",
+   "end": "2026-10-15T09:30:01.345Z",
+   "id": "q6",
+   "parentId": "v6"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.350Z",
+   "end": "2026-10-15T09:30:01.330Z",
+   "id": "d6",
+   "parentId": "q6",
+   "metrics": {
+    "QueryText": "DEFINE MEASURE 'Sales'[Rev PY] = CALCULATE([Revenue], SAMEPERIODLASTYEAR('Date'[Date]))\nMEASURE 'Sales'[Growth %] = IFERROR(([Revenue] - [Rev PY]) / [Rev PY], 0)\nEVALUATE SUMMARIZECOLUMNS('Date'[Month],\"Rev\",[Revenue],\"RevPY\",[Rev PY],\"Growth\",[Growth %])",
+    "RowCount": 24
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:01.345Z",
+   "end": "2026-10-15T09:30:01.465Z",
+   "id": "r6",
+   "parentId": "v6"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.240Z",
+   "end": "2026-10-15T09:30:00.755Z",
+   "id": "v7",
+   "metrics": {
+    "visualTitle": "Product Slicer",
+    "visualId": "v7",
+    "visualType": "slicer",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.330Z",
+   "end": "2026-10-15T09:30:00.695Z",
+   "id": "q7",
+   "parentId": "v7"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.340Z",
+   "end": "2026-10-15T09:30:00.680Z",
+   "id": "d7",
+   "parentId": "q7",
+   "metrics": {
+    "QueryText": "EVALUATE TOPN(101, VALUES('Product'[Name]))",
+    "RowCount": 1850
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.695Z",
+   "end": "2026-10-15T09:30:00.755Z",
+   "id": "r7",
+   "parentId": "v7"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.280Z",
+   "end": "2026-10-15T09:30:00.755Z",
+   "id": "v8",
+   "metrics": {
+    "visualTitle": "Top 10 Products",
+    "visualId": "v8",
+    "visualType": "barChart",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.390Z",
+   "end": "2026-10-15T09:30:00.675Z",
+   "id": "q8",
+   "parentId": "v8"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.400Z",
+   "end": "2026-10-15T09:30:00.660Z",
+   "id": "d8",
+   "parentId": "q8",
+   "metrics": {
+    "QueryText": "EVALUATE TOPN(10, SUMMARIZECOLUMNS('Product'[Name],\"Rev\",[Revenue]), [Rev], 0)",
+    "RowCount": 10
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.675Z",
+   "end": "2026-10-15T09:30:00.755Z",
+   "id": "r8",
+   "parentId": "v8"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.320Z",
+   "end": "2026-10-15T09:30:00.630Z",
+   "id": "v9",
+   "metrics": {
+    "visualTitle": "Channel Mix",
+    "visualId": "v9",
+    "visualType": "donutChart",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.415Z",
+   "end": "2026-10-15T09:30:00.590Z",
+   "id": "q9",
+   "parentId": "v9"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.425Z",
+   "end": "2026-10-15T09:30:00.575Z",
+   "id": "d9",
+   "parentId": "q9",
+   "metrics": {
+    "QueryText": "EVALUATE SUMMARIZECOLUMNS('Sales'[Channel],\"Rev\",[Revenue])",
+    "RowCount": 4
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.590Z",
+   "end": "2026-10-15T09:30:00.630Z",
+   "id": "r9",
+   "parentId": "v9"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.360Z",
+   "end": "2026-10-15T09:30:00.605Z",
+   "id": "v10",
+   "metrics": {
+    "visualTitle": "Margin %",
+    "visualId": "v10",
+    "visualType": "card",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.430Z",
+   "end": "2026-10-15T09:30:00.575Z",
+   "id": "q10",
+   "parentId": "v10"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.440Z",
+   "end": "2026-10-15T09:30:00.560Z",
+   "id": "d10",
+   "parentId": "q10",
+   "metrics": {
+    "QueryText": "EVALUATE ROW(\"Margin\", [Margin %])",
+    "RowCount": 1
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.575Z",
+   "end": "2026-10-15T09:30:00.605Z",
+   "id": "r10",
+   "parentId": "v10"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.400Z",
+   "end": "2026-10-15T09:30:00.685Z",
+   "id": "v11",
+   "metrics": {
+    "visualTitle": "Total Revenue",
+    "visualId": "v11",
+    "visualType": "card",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.520Z",
+   "end": "2026-10-15T09:30:00.655Z",
+   "id": "q11",
+   "parentId": "v11"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.530Z",
+   "end": "2026-10-15T09:30:00.640Z",
+   "id": "d11",
+   "parentId": "q11",
+   "metrics": {
+    "QueryText": "EVALUATE ROW(\"Revenue\", [Revenue])",
+    "RowCount": 1
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.655Z",
+   "end": "2026-10-15T09:30:00.685Z",
+   "id": "r11",
+   "parentId": "v11"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.440Z",
+   "end": "2026-10-15T09:30:00.730Z",
+   "id": "v12",
+   "metrics": {
+    "visualTitle": "Orders",
+    "visualId": "v12",
+    "visualType": "card",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.580Z",
+   "end": "2026-10-15T09:30:00.700Z",
+   "id": "q12",
+   "parentId": "v12"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.590Z",
+   "end": "2026-10-15T09:30:00.685Z",
+   "id": "d12",
+   "parentId": "q12",
+   "metrics": {
+    "QueryText": "DEFINE MEASURE 'Sales'[Order Count] = COUNT('Sales'[OrderID])\nEVALUATE ROW(\"Orders\", [Order Count])",
+    "RowCount": 1
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.700Z",
+   "end": "2026-10-15T09:30:00.730Z",
+   "id": "r12",
+   "parentId": "v12"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.480Z",
+   "end": "2026-10-15T09:30:00.825Z",
+   "id": "v13",
+   "metrics": {
+    "visualTitle": "Avg Order Value",
+    "visualId": "v13",
+    "visualType": "card",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.640Z",
+   "end": "2026-10-15T09:30:00.795Z",
+   "id": "q13",
+   "parentId": "v13"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.650Z",
+   "end": "2026-10-15T09:30:00.780Z",
+   "id": "d13",
+   "parentId": "q13",
+   "metrics": {
+    "QueryText": "DEFINE MEASURE 'Sales'[AOV] = [Revenue] / [Order Count]\nEVALUATE ROW(\"AOV\", [AOV])",
+    "RowCount": 1
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.795Z",
+   "end": "2026-10-15T09:30:00.825Z",
+   "id": "r13",
+   "parentId": "v13"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.520Z",
+   "end": "2026-10-15T09:30:00.720Z",
+   "id": "v14",
+   "metrics": {
+    "visualTitle": "Inventory Cover",
+    "visualId": "v14",
+    "visualType": "gauge",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.580Z",
+   "end": "2026-10-15T09:30:00.695Z",
+   "id": "q14",
+   "parentId": "v14"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.590Z",
+   "end": "2026-10-15T09:30:00.680Z",
+   "id": "d14",
+   "parentId": "q14",
+   "metrics": {
+    "QueryText": "EVALUATE ROW(\"Days\", [Days of Cover], \"Target\", [Cover Target])",
+    "RowCount": 1
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.695Z",
+   "end": "2026-10-15T09:30:00.720Z",
+   "id": "r14",
+   "parentId": "v14"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.560Z",
+   "end": "2026-10-15T09:30:00.890Z",
+   "id": "v15",
+   "metrics": {
+    "visualTitle": "Region Slicer",
+    "visualId": "v15",
+    "visualType": "slicer",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.645Z",
+   "end": "2026-10-15T09:30:00.850Z",
+   "id": "q15",
+   "parentId": "v15"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.655Z",
+   "end": "2026-10-15T09:30:00.835Z",
+   "id": "d15",
+   "parentId": "q15",
+   "metrics": {
+    "QueryText": "EVALUATE VALUES('Store'[Region])",
+    "RowCount": 6
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.850Z",
+   "end": "2026-10-15T09:30:00.890Z",
+   "id": "r15",
+   "parentId": "v15"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.600Z",
+   "end": "2026-10-15T09:30:01.285Z",
+   "id": "v16",
+   "metrics": {
+    "visualTitle": "Returns by Reason",
+    "visualId": "v16",
+    "visualType": "barChart",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Query",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.750Z",
+   "end": "2026-10-15T09:30:01.195Z",
+   "id": "q16",
+   "parentId": "v16"
+  },
+  {
+   "name": "Execute DAX Query",
+   "component": "DSE",
+   "start": "2026-10-15T09:30:00.760Z",
+   "end": "2026-10-15T09:30:01.180Z",
+   "id": "d16",
+   "parentId": "q16",
+   "metrics": {
+    "QueryText": "DEFINE MEASURE 'Returns'[Damaged Count] = COUNTROWS(FILTER('Returns', 'Returns'[Condition] = \"Damaged\"))\nEVALUATE SUMMARIZECOLUMNS('Returns'[Reason],\"Qty\",[Return Qty],\"Damaged\",[Damaged Count])",
+    "RowCount": 8
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:01.195Z",
+   "end": "2026-10-15T09:30:01.285Z",
+   "id": "r16",
+   "parentId": "v16"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.640Z",
+   "end": "2026-10-15T09:30:00.675Z",
+   "id": "v17",
+   "metrics": {
+    "visualTitle": "Page Title",
+    "visualId": "v17",
+    "visualType": "textbox",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.660Z",
+   "end": "2026-10-15T09:30:00.675Z",
+   "id": "r17",
+   "parentId": "v17"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.680Z",
+   "end": "2026-10-15T09:30:00.872Z",
+   "id": "v18",
+   "metrics": {
+    "visualTitle": "Header band",
+    "visualId": "v18",
+    "visualType": "shape",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.860Z",
+   "end": "2026-10-15T09:30:00.872Z",
+   "id": "r18",
+   "parentId": "v18"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.720Z",
+   "end": "2026-10-15T09:30:00.920Z",
+   "id": "v19",
+   "metrics": {
+    "visualTitle": "KPI frame left",
+    "visualId": "v19",
+    "visualType": "shape",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.910Z",
+   "end": "2026-10-15T09:30:00.920Z",
+   "id": "r19",
+   "parentId": "v19"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.760Z",
+   "end": "2026-10-15T09:30:00.965Z",
+   "id": "v20",
+   "metrics": {
+    "visualTitle": "KPI frame right",
+    "visualId": "v20",
+    "visualType": "shape",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.955Z",
+   "end": "2026-10-15T09:30:00.965Z",
+   "id": "r20",
+   "parentId": "v20"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.800Z",
+   "end": "2026-10-15T09:30:01.008Z",
+   "id": "v21",
+   "metrics": {
+    "visualTitle": "Divider line",
+    "visualId": "v21",
+    "visualType": "shape",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:01.000Z",
+   "end": "2026-10-15T09:30:01.008Z",
+   "id": "r21",
+   "parentId": "v21"
+  },
+  {
+   "name": "Visual Container Lifecycle",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:00.840Z",
+   "end": "2026-10-15T09:30:01.075Z",
+   "id": "v22",
+   "metrics": {
+    "visualTitle": "Company logo",
+    "visualId": "v22",
+    "visualType": "image",
+    "initialLoad": true
+   }
+  },
+  {
+   "name": "Render",
+   "component": "Report Canvas",
+   "start": "2026-10-15T09:30:01.050Z",
+   "end": "2026-10-15T09:30:01.075Z",
+   "id": "r22",
+   "parentId": "v22"
+  }
+ ]
+}

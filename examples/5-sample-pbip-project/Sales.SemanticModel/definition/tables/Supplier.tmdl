@@ -1,0 +1,21 @@
+table Supplier
+
+	column SupplierKey
+		dataType: int64
+		isKey
+		summarizeBy: none
+		sourceColumn: SupplierKey
+
+	column 'Supplier Name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: SupplierName
+
+	column Country
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Country
+
+	partition Supplier = m
+		mode: import
+		source = Sql.Database("sql01", "SalesDW"){[Schema="dbo",Item="DimSupplier"]}[Data]
